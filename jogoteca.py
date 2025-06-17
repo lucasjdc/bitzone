@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, flash, url_for
-from colorama import Fore, init
-init()
+from colorama import Fore, Style, init
 
+init() # Inicia o colorama
 
 class Jogo:
     def __init__(self, nome, categoria, console):
@@ -9,6 +9,21 @@ class Jogo:
         self.categoria = categoria
         self.console = console
 
+class Usuario:
+    def __init__(self, nome, nickname, senha):
+        self.nome = nome
+        self.nickname = nickname
+        self.senha = senha
+
+usuario1 = Usuario('Lucas Costa', 'LJ', '12345')
+usuario2 = Usuario('Bruno Divino', 'BD', 'olohomora')
+usuario3 = Usuario('Guilherme Louro', 'Cake', 'python_eh_vida')
+
+usuarios = {
+    usuario1.nickname: usuario1,
+    usuario2.nickname: usuario2,
+    usuario3.nickname: usuario3
+    }
 
 app = Flask(__name__)
 app.secret_key = 'alura'
@@ -49,21 +64,23 @@ def login():
 
 @app.route('/autenticar', methods=['POST',])
 def autenticar():
-    if 'olohomora' == request.form['senha']:
-        session['usuario_logado'] = request.form['usuario']
-        flash(session['usuario_logado'] + ' logado com sucesso!')
-        proxima_pagina = request.form['proxima']
-        print(Fore.CYAN + proxima_pagina)
-        return redirect(proxima_pagina)
-    else:
-        flash('Usuário não logado.')
-        return redirect(url_for('login'))
-
+    if request.form['usuario'] in usuarios:
+        usuario = usuarios[request.form['usuario']]
+        if request.form['senha'] == usuario.senha:
+            session['usuario_logado'] = usuario.nickname
+            flash(usuario.nickname + ' logado com sucesso!')
+            proxima_pagina = request.form['proxima']
+            return redirect(proxima_pagina)
+        else:
+            flash('Usuário não logado.')
+            return redirect(url_for('login'))
 
 @app.route('/logout')
 def logout():
     session['usuario_logado'] = None
     flash('Logout realizado com sucesso.')
     return redirect(url_for('index'))
+
+print(Style.RESET_ALL) # Desativa o colorama
 
 app.run(debug=True)
