@@ -14,7 +14,7 @@ jogo3 = Jogo('Mortal Kombat','Luta','PS2')
 lista = [jogo1, jogo2, jogo3]
 
 @app.route('/')
-def index():    
+def index():
     return render_template('lista.html', titulo='Jogos', jogos=lista)
 
 @app.route('/novo')
@@ -29,4 +29,16 @@ def criar():
     jogo = Jogo(nome, categoria, console)
     lista.append(jogo)
     return redirect('/')
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/autenticar', methods=['POST'])
+def autenticar():
+    if 'olohomora' == request.form['senha']:
+        return redirect('/')
+    else:
+        return redirect('/login')
+
 app.run(debug=True)
